@@ -1,0 +1,35 @@
+---
+driver:
+  name: dokken
+  privileged: true # because Docker and SystemD/Upstart
+  chef_version: <%= ENV['CHEF_VERSION'] || 'current' %>
+
+transport:
+  name: dokken
+
+provisioner:
+  name: dokken
+
+platforms:
+
+- name: centos-7
+  driver:
+    image: dokken/centos-7
+    pid_one_command: /usr/lib/systemd/systemd
+
+#- name: ubuntu-18.04
+#  driver:
+#    image: dokken/ubuntu-18.04
+#    pid_one_command: /bin/systemd
+#    intermediate_instructions:
+#      - RUN /usr/bin/apt-get update
+#      - RUN /usr/bin/apt-get -y install sudo##
+
+suites:
+  - name: default
+    run_list:
+      - recipe[postgresql_ina::default]
+    verifier:
+      inspec_tests:
+        - test/smoke/default
+    attributes:
